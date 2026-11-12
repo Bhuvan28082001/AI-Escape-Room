@@ -1,0 +1,1 @@
+"""AI Escape Room package."""
