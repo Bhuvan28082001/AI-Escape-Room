@@ -1,0 +1,96 @@
+{
+  "title": "The Locked Library",
+  "intro": "You wake up on a cold stone floor inside a locked library. Dusty light falls across a desk, a bookshelf, a painting and a small locked drawer. The only way out is a heavy door with a four-digit keypad.\n\nType what you want to do, for example: examine the bookshelf. You can also type inventory for your items, hint for a nudge, or restart in the game controls.",
+  "objects": {
+    "desk": {
+      "aliases": ["table", "letter"],
+      "description": "A worn oak desk. A letter on it reads: 'The shelf speaks in the order of the rainbow.'"
+    },
+    "bookshelf": {
+      "aliases": ["shelf", "bookcase"],
+      "description": "Most of the books are identical, but four stand out. They are arranged differently from the rest."
+    },
+    "books": {
+      "aliases": ["book", "four books"],
+      "requires_examined": "bookshelf",
+      "missing_message": "You need to inspect the bookshelf before you can pick out individual books.",
+      "description": "Each of the four books has a handwritten number inside its cover: 4, 7, 1, 2."
+    },
+    "painting": {
+      "aliases": ["picture", "landscape"],
+      "description": "A landscape painting. Its frame looks slightly loose, and there is a tiny keyhole on the side.",
+      "flag_appendix": {
+        "panel_open": "The hidden panel behind it now stands open."
+      }
+    },
+    "panel": {
+      "aliases": ["hidden panel"],
+      "requires_flag": "panel_open",
+      "missing_message": "There is no panel you know about.",
+      "description": "The hidden panel behind the painting holds a folded paper.",
+      "empty_description": "The hidden panel is empty now."
+    },
+    "drawer": {
+      "aliases": ["drawer lock"],
+      "description_locked": "A small drawer with a four-digit combination lock. It is locked.",
+      "description_open": "The drawer is open.",
+      "open_with_item": "A brass key lies inside.",
+      "open_empty": "It is empty."
+    },
+    "door": {
+      "aliases": ["exit", "keypad"],
+      "description": "A heavy door with a four-digit keypad. The door is shut tight.",
+      "description_open": "The heavy door stands open, revealing a pale corridor beyond."
+    }
+  },
+  "items": {
+    "brass_key": {
+      "aliases": ["key", "brass key"],
+      "label": "brass key",
+      "requires_flag": "drawer_open",
+      "missing_message": "You cannot reach any key. The drawer is locked.",
+      "take_message": "You take the brass key from the drawer.",
+      "examine_message": "A small brass key. It might fit a narrow lock."
+    },
+    "paper": {
+      "aliases": ["note", "folded paper", "sheet"],
+      "label": "paper",
+      "requires_flag": "panel_open",
+      "missing_message": "There is no paper you can reach.",
+      "take_message": "You take the folded paper. It reads: 8305.",
+      "examine_message": "The folded paper reads: 8305.",
+      "reveals_code": "8305"
+    }
+  },
+  "locks": {
+    "drawer": {
+      "code": "4712",
+      "requires_examined": "books",
+      "no_clue_message": "You have not found any clue about the drawer code yet, so the drawer stays locked.",
+      "already_open_message": "The drawer is already open.",
+      "wrong_message": "The drawer does not open. Wrong code.",
+      "success_message": "The drawer clicks open.",
+      "opens_flag": "drawer_open"
+    },
+    "door": {
+      "code": "8305",
+      "requires_item": "paper",
+      "no_clue_message": "You have not found any clue about the door code yet, so the door stays locked.",
+      "already_open_message": "The door is already open.",
+      "wrong_message": "The keypad flashes red. Wrong code.",
+      "success_message": "The keypad beeps and the door swings open. You escape the library!",
+      "opens_flag": "door_unlocked",
+      "wins": true
+    }
+  },
+  "uses": {
+    "brass_key": {
+      "painting": {
+        "requires_flag_not": "panel_open",
+        "sets_flag": "panel_open",
+        "success_message": "The key turns in the frame's keyhole. A hidden panel swings open behind the painting.",
+        "already_message": "The panel is already open."
+      }
+    }
+  }
+}
