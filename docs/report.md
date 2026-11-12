@@ -70,7 +70,7 @@ The narrator is a second risk because it writes the visible text. A post-check r
 
 ## 4. Testing
 
-The automated suite contains 41 tests. It covers:
+The automated suite contains 44 tests. It covers the Version 1 history conversion and escape token, plus the Version 2 behavior:
 
 - a complete walkthrough from the bookshelf to the escape;
 - parser classification for normal and adversarial text;
@@ -86,7 +86,7 @@ The automated suite contains 41 tests. It covers:
 All tests pass:
 
 ```text
-41 passed in 0.17s
+44 passed
 ```
 
 The documented test cases in `docs/test_cases.md` map each challenge to a specific test. Version 1 cannot be tested deterministically because its behavior is the model's behavior; the probe script records live responses when a key is available. This is itself an important difference: Version 1 is testable only through the LLM, while Version 2's rules are ordinary Python functions with deterministic tests.

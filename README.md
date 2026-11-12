@@ -24,7 +24,7 @@ LLM games are easy to prototype and hard to make consistent. A model can forget 
 - Restart, inventory and hint controls.
 - Offline mode for Version 2 (regex parser + deterministic narration) so the game is playable without an API key.
 - Adversarial protection: uncollected items, wrong codes, fake progress, admin impersonation, secret requests, nonexistent objects and prompt injection.
-- Automated test suite with 41 tests.
+- Automated test suite with 44 tests.
 
 ## Game objective
 
@@ -108,7 +108,7 @@ No paid APIs, fine-tuning or large datasets are required.
 ├── scripts/
 │   ├── offline_demo.py       # deterministic walkthrough and attacks
 │   └── v1_probe.py           # run adversarial prompts against Version 1
-├── tests/                    # 41 automated tests
+├── tests/                    # 44 automated tests
 ├── docs/
 │   ├── architecture_v1.md
 │   ├── architecture_v2.md
@@ -195,7 +195,7 @@ The terminal prints a local URL, normally <http://127.0.0.1:7860>.
 python -m pytest -q
 ```
 
-Expected result: `41 passed`.
+Expected result: `44 passed`.
 
 The suite covers the normal walkthrough, parser classification, state consistency, inventory rules, wrong codes, false progress claims, admin impersonation, secret requests, nonexistent objects, actions after escape and secret leakage from the narrator.
 
