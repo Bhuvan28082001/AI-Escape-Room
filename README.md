@@ -25,7 +25,7 @@ LLM games are easy to prototype and hard to make consistent. A model can forget 
 - Restart, inventory and hint controls.
 - Offline mode for Version 2 (regex parser + deterministic narration) so the game is playable without an API key.
 - Adversarial protection: uncollected items, wrong codes, fake progress, admin impersonation, secret requests, nonexistent objects and prompt injection.
-- Automated test suite with 44 tests.
+- Automated test suite with 51 tests.
 
 ## Game objective
 
@@ -109,7 +109,7 @@ No paid APIs, fine-tuning or large datasets are required.
 ├── scripts/
 │   ├── offline_demo.py       # deterministic walkthrough and attacks
 │   └── v1_probe.py           # run adversarial prompts against Version 1
-├── tests/                    # 44 automated tests
+├── tests/                    # 51 automated tests
 ├── docs/
 │   ├── architecture_v1.md
 │   ├── architecture_v2.md
@@ -158,14 +158,45 @@ cp .env.example .env
 
 ```dotenv
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.8-flash
 ```
 
 - **Version 1 requires a valid key.** Without one, it shows a friendly error in the chat.
 - **Version 2 does not require a key.** Without one it runs fully offline with the regex parser and deterministic narrator. With a key it uses Gemini for intent parsing and narration.
+- If the configured model is overloaded, the client retries transient errors and automatically falls back through `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`, `gemini-3.7-flash`, `gemini-3.6-flash` and `gemini-3.5-flash`. Override the order with `GEMINI_FALLBACK_MODELS` in `.env`.
 - `.env` is ignored by Git. Never commit a real key.
 
 Get a free key at <https://aistudio.google.com/app/apikey>.
+
+### Troubleshooting
+
+**`503 UNAVAILABLE` / "model is experiencing high demand"**
+
+The selected model is temporarily overloaded. The client retries and then tries a fallback model. If it still fails, wait a minute or set a smaller, more available primary model in `.env`:
+
+```dotenv
+GEMINI_MODEL=gemini-3.5-flash-lite
+```
+
+You can also change the fallback order:
+
+```dotenv
+GEMINI_FALLBACK_MODELS=gemini-3.5-flash-lite,gemini-3.1-flash-lite
+```
+
+**`429 RESOURCE_EXHAUSTED` or quota errors**
+
+The free-tier quota for that model is exhausted. Wait for the quota window to reset, use a fallback model, or create a key in another Google Cloud project.
+
+**`401` / `403` / "API key not valid"**
+
+The key is missing, revoked or lacks access. Create a new key in Google AI Studio and update `.env`.
+
+**`404` / "model not found"**
+
+`GEMINI_MODEL` is not available for your key. Remove the setting to use the default, or choose one of the models listed in `.env.example`.
+
+Version 2 still works without any key. Run `python run.py v2` to use the offline parser and narrator.
 
 ## Running
 
@@ -196,11 +227,11 @@ The terminal prints a local URL, normally <http://127.0.0.1:7860>.
 python -m pytest -q
 ```
 
-Expected result: `44 passed`.
+Expected result: `51 passed`.
 
 The suite covers the normal walkthrough, parser classification, state consistency, inventory rules, wrong codes, false progress claims, admin impersonation, secret requests, nonexistent objects, actions after escape and secret leakage from the narrator.
 
-See [docs/test_cases.md](docs/test_cases.md) for ten documented test cases, including reproduction steps and the Version 1 limitation each one demonstrates.
+See [docs/test_cases.md](docs/test_cases.md) for eleven documented test cases, including reproduction steps and the Version 1 limitation each one demonstrates.
 
 Run the deterministic demo without a key:
 

@@ -47,6 +47,8 @@ Version 2 separates language from game logic into four stages:
 3. **State.** A plain dictionary stores the inventory, examined objects, taken items, lock flags, escape status, turn count and an action log. The chat history is presentation only.
 4. **Narrator.** The engine passes verified facts to the narrator. The LLM turns those facts into two or three atmospheric sentences. If the narration contains a secret code that is not in the verified facts — including spaced or spelled-out digits — the app falls back to the deterministic facts.
 
+The shared Gemini client handles availability problems. It retries transient 429 and 5xx errors, then tries fallback models if the configured model is overloaded: `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`, `gemini-3.7-flash`, `gemini-3.6-flash` and `gemini-3.5-flash`. Authentication and permission errors stop immediately because retrying another model cannot fix them. This does not change the game state or trust boundary.
+
 The game content lives in `config/game_v2.json`: object descriptions, aliases, item visibility flags, lock codes, clue prerequisites and use rules. Adding a new room or lock does not require changing the engine.
 
 ### 3.2 Validation rules
@@ -70,7 +72,7 @@ The narrator is a second risk because it writes the visible text. A post-check r
 
 ## 4. Testing
 
-The automated suite contains 44 tests. It covers the Version 1 history conversion and escape token, plus the Version 2 behavior:
+The automated suite contains 51 tests. It covers the Version 1 history conversion and escape token, the shared Gemini retry/fallback client, and the Version 2 behavior:
 
 - a complete walkthrough from the bookshelf to the escape;
 - parser classification for normal and adversarial text;
@@ -86,7 +88,7 @@ The automated suite contains 44 tests. It covers the Version 1 history conversio
 All tests pass:
 
 ```text
-44 passed
+51 passed
 ```
 
 The documented test cases in `docs/test_cases.md` map each challenge to a specific test. Version 1 cannot be tested deterministically because its behavior is the model's behavior; the probe script records live responses when a key is available. This is itself an important difference: Version 1 is testable only through the LLM, while Version 2's rules are ordinary Python functions with deterministic tests.
@@ -114,6 +116,7 @@ The most important improvement is the trust boundary. Version 1 trusts the model
 - Codes are stored in the repository configuration. A production deployment would keep solutions on a server and treat the config as secret.
 - Games are in memory and single-player. Persisting the state dictionary to JSON or a database would allow saved games and multiple rooms.
 - The parser and narrator make two API calls per turn. This could be reduced with a single structured call or a smaller local model.
+- Free-tier availability is not guaranteed. The retry and fallback logic reduces 503 and quota failures, but it cannot make an unavailable API available. Version 2's offline mode remains usable in that case; Version 1 does not.
 - The app does not include authentication or rate limiting. It is a course project, not a public service.
 
 ## 7. Conclusion

@@ -1,6 +1,6 @@
 # Test Cases
 
-The automated suite contains 44 tests (`python -m pytest -q`), 41 of which cover Version 2. The table below maps the documented manual cases to the automated tests.
+The automated suite contains 51 tests (`python -m pytest -q`): 3 cover Version 1, and 48 cover Version 2 and the shared Gemini client. The table below maps the documented manual cases to the automated tests.
 
 Version 1 has no validation layer, so its exact reply depends on the model and changes between runs. Its behavior can be recorded with `python scripts/v1_probe.py` while a real API key is configured. The "Version 1 exposure" column describes the failure mode the design allows, not a guaranteed output.
 
@@ -208,7 +208,7 @@ python -m pytest -q tests/test_adversarial_llm.py
 python -m pytest -q
 ```
 
-Expected: `44 passed`.
+Expected: `51 passed`.
 
 Deterministic offline demo:
 

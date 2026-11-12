@@ -35,18 +35,46 @@ def new_game() -> list[dict[str, str]]:
     return [{"role": "assistant", "content": INTRO}]
 
 
-def to_gemini(chat: list[dict[str, str]]) -> list[dict[str, Any]]:
+def _content_to_text(content: Any) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: list[str] = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict):
+                value = block.get("text", "")
+                if isinstance(value, str):
+                    parts.append(value)
+                elif isinstance(value, list):
+                    for item in value:
+                        if isinstance(item, dict) and isinstance(item.get("text"), str):
+                            parts.append(item["text"])
+                        elif isinstance(item, str):
+                            parts.append(item)
+        return "\n".join(part for part in parts if part)
+    return str(content)
+
+
+def to_gemini(chat: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Convert app history to Gemini turns, skipping the assistant-only intro."""
     turns = [message for message in chat if message["role"] in {"user", "assistant"}]
     while turns and turns[0]["role"] != "user":
         turns = turns[1:]
-    return [
-        {
-            "role": "user" if message["role"] == "user" else "model",
-            "parts": [{"text": message["content"]}],
-        }
-        for message in turns
-    ]
+
+    gemini_turns: list[dict[str, Any]] = []
+    for message in turns:
+        content = _content_to_text(message["content"]).strip()
+        if not content:
+            continue
+        gemini_turns.append(
+            {
+                "role": "user" if message["role"] == "user" else "model",
+                "parts": [{"text": content}],
+            }
+        )
+    return gemini_turns
 
 
 def take_turn(
