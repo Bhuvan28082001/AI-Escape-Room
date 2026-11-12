@@ -1,3 +1,4 @@
+
 # AI Escape Room
 
 An interactive text escape room powered by an LLM. The player wakes up in a locked library, investigates five objects, solves three puzzles and enters the final code to escape.
@@ -268,3 +269,4 @@ Full analysis and test evidence: [docs/report.md](docs/report.md).
 ## License
 
 Educational course project. Use and adapt it for learning.
+
